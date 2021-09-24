@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+  taskbot:
+    image: taskbot
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - TASK_BOT
+    container_name: task_bot_compose

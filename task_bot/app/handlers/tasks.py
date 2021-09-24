@@ -24,6 +24,7 @@ def register_handlers_tasks(dp: Dispatcher, admin_id: int):
     dp.register_message_handler(choose_task, IDFilter(user_id=admin_id), state=PerformTask.choose_task)
     dp.register_message_handler(enter_results, IDFilter(user_id=admin_id), state=PerformTask.enter_results)
 
+    app.tasks_db.actions.init_db()
 
 async def cmd_cancel(message: types.Message, state: FSMContext):
     await state.finish()
