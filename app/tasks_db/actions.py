@@ -3,7 +3,7 @@ import time
 import sqlite3
 
 
-DB_PATH = "app/data/tasks.db"
+DB_PATH = "data/tasks.db"
 
 
 def init_db(db_path:str=DB_PATH) -> None:

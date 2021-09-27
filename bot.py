@@ -19,7 +19,7 @@ async def set_commands(bot: Bot):
 
 async def main():
     """ Main loop of the bot. """
-    logger.add("app/data/bot.log", rotation="10 MB")
+    logger.add("data/bot.log", rotation="10 MB")
     logger.info("Task bot bot started!")
 
     bot = Bot(token=os.getenv("TASK_BOT"))
