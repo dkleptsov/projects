@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 task_bot/app/tasks_db/tasks.db
 task_bot/fourambot.py
+app/data

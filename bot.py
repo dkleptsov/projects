@@ -1,13 +1,14 @@
+import os
 import asyncio
 from loguru import logger
 from aiogram import Bot, Dispatcher
 from aiogram.types import BotCommand
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-import app.settings
 from app.handlers.tasks import register_handlers_tasks
 
 
 async def set_commands(bot: Bot):
+    """ Telegram will show this hints when / is pressed. """
     commands = [
         BotCommand(command="/add_task", description="Add new task."),
         BotCommand(command="/perform_task", description="Perform task."),
@@ -17,12 +18,14 @@ async def set_commands(bot: Bot):
 
 
 async def main():
-    logger.add(app.settings.LOGS_PATH, rotation="10 MB")
-    bot = Bot(token=app.settings.BOT_TOKEN)
+    """ Main loop of the bot. """
+    logger.add("app/data/bot.log", rotation="10 MB")
+    logger.info("Task bot bot started!")
+
+    bot = Bot(token=os.getenv("TASK_BOT"))
     dp = Dispatcher(bot, storage=MemoryStorage())
-    register_handlers_tasks(dp, app.settings.ADMIN_ID)
-    await set_commands(bot)
-    logger.info("Task bot bot started!")    
+    register_handlers_tasks(dp, os.getenv("ADMIN_ID"))
+    await set_commands(bot)  
     await dp.start_polling()
 
 

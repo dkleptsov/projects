@@ -2,10 +2,14 @@ version: '3.4'
 
 services:
   taskbot:
-    image: taskbot
+    image: taskbot_compose
     build:
       context: .
       dockerfile: ./Dockerfile
     environment:
       - TASK_BOT
+      - ADMIN_ID
     container_name: task_bot_compose
+    deploy:
+      restart_policy:
+        condition: always

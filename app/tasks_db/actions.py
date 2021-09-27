@@ -3,26 +3,21 @@ import time
 import sqlite3
 
 
-DEFAULT_DB_PATH = "app/tasks_db/tasks.db"
-DEFAULT_USER = 1631744908
+DB_PATH = "app/data/tasks.db"
 
 
-def init_db(db_path:str=DEFAULT_DB_PATH) -> None:
+def init_db(db_path:str=DB_PATH) -> None:
+    """ Initializes task db if it doesnt exists. """
     if not os.path.isfile(db_path):
         create_tasks_table()
-        for i in range(10):
-            add_task(f"TEST TASK {i}")
-        
-        print(load_all_tasks())
-        delete_task("TEST TASK 3")
-        print("\n"*3 + "Whithout TEST TASK 3:")        
-        print(load_all_tasks())
+        for i in range(3):
+            add_task(f"TEST TASK {i}", os.getenv("ADMIN_ID"))
     else:
-        print("Already exists!")
+        print("Task db already exists!")
     
 
-def create_tasks_table(db_path:str=DEFAULT_DB_PATH) -> None:
-    """ Creates empty task db """
+def create_tasks_table(db_path:str=DB_PATH) -> None:
+    """ Creates empty tasks db. """
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     c.execute("""CREATE TABLE all_tasks (
@@ -37,7 +32,7 @@ def create_tasks_table(db_path:str=DEFAULT_DB_PATH) -> None:
     conn.close()
 
 
-def add_task(task_name:str, user:int=DEFAULT_USER, db_path:str=DEFAULT_DB_PATH) -> None:
+def add_task(task_name:str, user:int, db_path:str=DB_PATH) -> None:
     """ Adds task to a text file. """
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
@@ -55,7 +50,7 @@ def add_task(task_name:str, user:int=DEFAULT_USER, db_path:str=DEFAULT_DB_PATH) 
     conn.close()
 
 
-def delete_task(task_to_delete:str, user:int=DEFAULT_USER, db_path:str=DEFAULT_DB_PATH) -> None:
+def delete_task(task_to_delete:str, user:int, db_path:str=DB_PATH) -> None:
     """ Deletes given task from text file. """
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
@@ -66,7 +61,7 @@ def delete_task(task_to_delete:str, user:int=DEFAULT_USER, db_path:str=DEFAULT_D
     conn.close()
 
 
-def load_all_tasks(db_path:str=DEFAULT_DB_PATH) -> list:
+def load_all_tasks(db_path:str=DB_PATH) -> list:
     """ Returns list of all tasks. """
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
@@ -75,7 +70,7 @@ def load_all_tasks(db_path:str=DEFAULT_DB_PATH) -> list:
     return c.fetchall()
 
 
-def get_unfinished_tasks(user:int=DEFAULT_USER, db_path:str=DEFAULT_DB_PATH):
+def get_unfinished_tasks(user:int, db_path:str=DB_PATH):
     task_list = load_all_tasks(db_path)
     output_list = []
     for task in task_list:
@@ -85,7 +80,7 @@ def get_unfinished_tasks(user:int=DEFAULT_USER, db_path:str=DEFAULT_DB_PATH):
     return output_list
 
 
-def begin_task(task_name:str, user:int=DEFAULT_USER, db_path:str=DEFAULT_DB_PATH) -> None:
+def begin_task(task_name:str, user:int, db_path:str=DB_PATH) -> None:
     """ Mark beginning of a task. """
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
@@ -102,10 +97,10 @@ def begin_task(task_name:str, user:int=DEFAULT_USER, db_path:str=DEFAULT_DB_PATH
     conn.close()
 
 
-def complete_task(user:int=DEFAULT_USER, db_path:str=DEFAULT_DB_PATH) -> None:
+def complete_task(user:int, db_path:str=DB_PATH) -> None:
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    task_name, hours_spent = get_hours_spent()
+    task_name, hours_spent = get_hours_spent(user)
     with conn:
         c.execute("""UPDATE all_tasks SET date_completed = :current_time,
                  hours_spent = :hours_spent, started_time = 0 
@@ -118,10 +113,10 @@ def complete_task(user:int=DEFAULT_USER, db_path:str=DEFAULT_DB_PATH) -> None:
     return task_name, hours_spent
 
 
-def add_time(user:int=DEFAULT_USER, db_path:str=DEFAULT_DB_PATH) -> None:
+def add_time(user:int, db_path:str=DB_PATH) -> None:
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    task_name, hours_spent = get_hours_spent()
+    task_name, hours_spent = get_hours_spent(user)
     with conn:
         c.execute("""UPDATE all_tasks SET hours_spent = :hours_spent, started_time = 0 WHERE user = :user AND task_name = :task_name""", 
                   {"hours_spent": hours_spent,
@@ -131,7 +126,7 @@ def add_time(user:int=DEFAULT_USER, db_path:str=DEFAULT_DB_PATH) -> None:
     return task_name, hours_spent
 
 
-def get_hours_spent(user:int=DEFAULT_USER, db_path:str=DEFAULT_DB_PATH) -> None:
+def get_hours_spent(user:int, db_path:str=DB_PATH) -> None:
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     with conn:
@@ -142,25 +137,9 @@ def get_hours_spent(user:int=DEFAULT_USER, db_path:str=DEFAULT_DB_PATH) -> None:
     return task_name, hours_spent
 
 
-# def modify_task(old_task:str, new_task:str, 
-#                 db_path:str=DEFAULT_DB_PATH) -> None:
-#     """ Modify task if old task exists. """
-#     if delete_task(old_task, db_path=db_path):
-#         add_task(new_task, db_path=db_path)
-
-
 def main():
     init_db()
     print(load_all_tasks())
-    # print(load_all_tasks())
-    # conn = sqlite3.connect(DEFAULT_DB_PATH)
-    # c = conn.cursor()
-    # with conn:
-        # c.execute("""UPDATE all_tasks SET date_completed = 67
-        #             WHERE task_name = :task_name""", {"task_name": "TEST TASK 1"})
-    # conn.close()
-    # print("\n"*3)
-    # print(load_all_tasks())
 
 
 if __name__ == "__main__":
