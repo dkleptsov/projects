@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   taskbot:
-    image: taskbot_compose
+    image: kleptsov/task_bot
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -11,7 +11,7 @@ services:
       - ADMIN_ID
     container_name: task_bot_compose
     restart: always
-    volumes:
-      - db:/home/appuser/task_bot/data
-volumes:
-  db:
+#     volumes:
+#       - db:/home/appuser/task_bot/data
+# volumes:
+#   db:
